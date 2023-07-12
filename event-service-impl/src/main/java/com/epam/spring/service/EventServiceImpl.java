@@ -3,6 +3,7 @@ package com.epam.spring.service;
 import com.epam.spring.exception.NotFoundException;
 import com.epam.spring.model.Event;
 import com.epam.spring.repository.EventRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,15 @@ import static java.util.stream.StreamSupport.stream;
 
 @Service
 public class EventServiceImpl implements EventService {
+    private final ModelMapper mapper;
 
     @Autowired
     private EventRepository repository;
+
+    public EventServiceImpl(ModelMapper mapper, EventRepository repository) {
+        this.mapper = mapper;
+        this.repository = repository;
+    }
 
     @Override
     public void createEvent(Event event) {
@@ -23,9 +30,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void updateEvent(Event event) {
-        getEvent(event.getId());
-        repository.save(event);
+    public Event updateEvent(int id, Event event) {
+        Event updatedEvent = repository.findById(id).orElseThrow(()
+                -> new NotFoundException("Event with id " + id + " was not found"));
+        mapper.map(event, updatedEvent);
+        return repository.save(updatedEvent);
     }
 
     @Override

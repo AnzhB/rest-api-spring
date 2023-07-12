@@ -25,11 +25,10 @@ public class EventServiceController {
         eventService.createEvent(event);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Update Event by id")
-    public void updateEvent(@PathVariable int eventId, @RequestBody Event event) {
-        event.setId(eventId);
-        eventService.updateEvent(event);
+    public Event updateEvent(@PathVariable int id, @RequestBody Event event) {
+        return eventService.updateEvent(id, event);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
